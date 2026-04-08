@@ -1,0 +1,64 @@
+# MCP E2E Testing Framework - Configuration
+
+# Server connection
+server:
+  name: okta-mcp-server
+  type: stdio
+  command: uv
+  args:
+    - run
+    - --directory
+    - /Users/agrja.rastogi/okta/okta-mcp-server
+    - okta-mcp-server
+
+# Okta credentials (from environment)
+okta:
+  org_url: ${OKTA_ORG_URL}
+  client_id: ${OKTA_CLIENT_ID}
+  private_key: ${OKTA_PRIVATE_KEY}
+  key_id: ${OKTA_KEY_ID}
+
+# LLM Configuration (for Layer 4-5)
+# Supports multiple providers via litellm - choose one below
+claude:
+  # Option 1: Anthropic Claude (requires ANTHROPIC_API_KEY)
+  # api_key: ${ANTHROPIC_API_KEY}
+  # model: claude-3-5-sonnet-20241022
+
+  # Option 2: Ollama (free, local, no API key needed)
+  api_key: ""
+  model: ollama/llama3.2
+
+  # Option 3: OpenAI (requires OPENAI_API_KEY)
+  # api_key: ${OPENAI_API_KEY}
+  # model: gpt-4o-mini
+
+  # Option 4: Google Gemini (requires GEMINI_API_KEY)
+  # api_key: ${GEMINI_API_KEY}
+  # model: gemini/gemini-1.5-flash
+
+  temperature: 0.5
+
+# Execution settings
+execution:
+  layers: [0, 1, 2, 3, 4, 5]
+  fail_fast_deterministic: false  # Continue through all layers even with failures
+  max_workers: 10  # Layer 2-3 concurrency (parallel test execution)
+  max_workers_llm: 5  # Layer 4 LLM call concurrency (lower to respect API limits)
+  use_client_pool: true  # Reuse MCP connections across layers
+  timeouts:
+    layer_0_1: 30
+    layer_2_3: 300
+    layer_4_5: 600
+
+# Reporting
+reporting:
+  output_dir: framework_poc/reports/latest
+  history_dir: framework_poc/reports/history
+  formats: [html, json]
+  include_proposed_fixes: true
+
+# POC-specific settings
+poc:
+  focus_tool: delete_deactivated_user  # Or any destructive tool
+  focus_layers: [0, 1, 2, 3, 4, 5]

@@ -80,3 +80,7 @@ venv.bak/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# MCP E2E Testing Framework - Generated reports
+framework_poc/reports/
+.env.local
